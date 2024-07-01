@@ -1,7 +1,8 @@
 from django.urls import path
-from .views import ProjectListCreateView, ProjectRetrieveUpdateDestroyView, RepositoryListCreateView, RepositoryRetrieveUpdateDestroyView, TrackerListCreateView, TrackerRetrieveUpdateDestroyView
+from .views import ProjectListCreateView, ProjectRetrieveUpdateDestroyView, RepositoryListCreateView, RepositoryRetrieveUpdateDestroyView, TrackerListCreateView, TrackerRetrieveUpdateDestroyView, home
 
 urlpatterns = [
+    path('', home, name='home'),
     path('projects/', ProjectListCreateView.as_view(), name='project-list-create'),
     path('projects/<int:pk>/', ProjectRetrieveUpdateDestroyView.as_view(), name='project-detail'),
     path('repositories/', RepositoryListCreateView.as_view(), name='repository-list-create'),

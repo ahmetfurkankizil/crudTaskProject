@@ -1,6 +1,10 @@
 from rest_framework import generics
+from django.shortcuts import render
 from .models import Project, Repository, Tracker
 from .serializers import ProjectSerializer, RepositorySerializer, TrackerSerializer
+
+def home(request):
+    return render(request, 'home.html')
 
 class ProjectListCreateView(generics.ListCreateAPIView):
     queryset = Project.objects.all()

@@ -1,0 +1,16 @@
+<!-- templates/home.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Home</title>
+    {% load static %}
+</head>
+<body>
+<div id="app">
+    <p>{{ message }}</p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+<script src="{% static 'js/index.js' %}"></script>
+</body>
+</html>
