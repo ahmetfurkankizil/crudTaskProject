@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -38,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'projects',
 ]
 
 MIDDLEWARE = [
@@ -77,10 +79,16 @@ WSGI_APPLICATION = 'crudTaskProject.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'crudTask',
+        'USER': 'postgres',
+        'PASSWORD': 'mkA23.jfk',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
+
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-$nmce$^-ho)0*88+2k*w8vjvfxxg^9df)1@nr7$4*x!wmgg+qi')
 
 
 # Password validation

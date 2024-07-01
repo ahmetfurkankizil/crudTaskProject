@@ -1,6 +1,8 @@
+import uuid
 from django.db import models
 
 class Project(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True)
     description = models.TextField()
@@ -10,19 +12,11 @@ class Project(models.Model):
         return self.name
 
 class Repository(models.Model):
-    GITHUB = 'GitHub'
-    GITLAB = 'GitLab'
-    BITBUCKET = 'Bitbucket'
-    REPO_TYPE_CHOICES = [
-        (GITHUB, 'GitHub'),
-        (GITLAB, 'GitLab'),
-        (BITBUCKET, 'Bitbucket'),
-    ]
-
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     project = models.ForeignKey(Project, related_name='repositories', on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
     url = models.URLField()
-    type = models.CharField(max_length=10, choices=REPO_TYPE_CHOICES)
+    type = models.CharField(max_length=10, choices=[('GitHub', 'GitHub'), ('GitLab', 'GitLab'), ('Bitbucket', 'Bitbucket')])
     email = models.EmailField()
     token = models.CharField(max_length=100)
 
@@ -30,19 +24,11 @@ class Repository(models.Model):
         return self.title
 
 class Tracker(models.Model):
-    GITHUB = 'GitHub'
-    GITLAB = 'GitLab'
-    JIRA = 'Jira'
-    TRACKER_TYPE_CHOICES = [
-        (GITHUB, 'GitHub'),
-        (GITLAB, 'GitLab'),
-        (JIRA, 'Jira'),
-    ]
-
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     project = models.ForeignKey(Project, related_name='trackers', on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
     url = models.URLField()
-    type = models.CharField(max_length=10, choices=TRACKER_TYPE_CHOICES)
+    type = models.CharField(max_length=10, choices=[('GitHub', 'GitHub'), ('GitLab', 'GitLab'), ('Jira', 'Jira')])
     email = models.EmailField()
     token = models.CharField(max_length=100)
 

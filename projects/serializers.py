@@ -12,9 +12,39 @@ class TrackerSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class ProjectSerializer(serializers.ModelSerializer):
-    repositories = RepositorySerializer(many=True, read_only=True)
-    trackers = TrackerSerializer(many=True, read_only=True)
+    repositories = RepositorySerializer(many=True)
+    trackers = TrackerSerializer(many=True)
 
     class Meta:
         model = Project
         fields = '__all__'
+
+    def create(self, validated_data):
+        repositories_data = validated_data.pop('repositories')
+        trackers_data = validated_data.pop('trackers')
+        project = Project.objects.create(**validated_data)
+        for repository_data in repositories_data:
+            Repository.objects.create(project=project, **repository_data)
+        for tracker_data in trackers_data:
+            Tracker.objects.create(project=project, **tracker_data)
+        return project
+
+    def update(self, instance, validated_data):
+        repositories_data = validated_data.pop('repositories')
+        trackers_data = validated_data.pop('trackers')
+
+        instance.name = validated_data.get('name', instance.name)
+        instance.slug = validated_data.get('slug', instance.slug)
+        instance.description = validated_data.get('description', instance.description)
+        instance.language = validated_data.get('language', instance.language)
+        instance.save()
+
+        instance.repositories.all().delete()
+        instance.trackers.all().delete()
+
+        for repository_data in repositories_data:
+            Repository.objects.create(project=instance, **repository_data)
+        for tracker_data in trackers_data:
+            Tracker.objects.create(project=instance, **tracker_data)
+
+        return instance
