@@ -26,7 +26,9 @@ new Vue({
             email: '',
             token: '',
             project: ''
-        }
+        },
+        repositoryTypes: ['GitHub', 'GitLab', 'Bitbucket'],
+        trackerTypes: ['GitHub', 'GitLab', 'Jira']
     },
     methods: {
         fetchProjects() {
@@ -42,10 +44,7 @@ new Vue({
             axios.post('http://127.0.0.1:8000/api/projects/', this.newProject)
                 .then(response => {
                     this.projects.push(response.data);
-                    this.newProject.name = '';
-                    this.newProject.slug = '';
-                    this.newProject.description = '';
-                    this.newProject.language = '';
+                    this.resetNewProject();
                 })
                 .catch(error => {
                     console.error('There was an error creating the project!', error);
@@ -54,12 +53,7 @@ new Vue({
         createRepository() {
             axios.post('http://127.0.0.1:8000/api/repositories/', this.newRepository)
                 .then(response => {
-                    this.newRepository.title = '';
-                    this.newRepository.url = '';
-                    this.newRepository.type = '';
-                    this.newRepository.email = '';
-                    this.newRepository.token = '';
-                    this.newRepository.project = '';
+                    this.resetNewRepository();
                 })
                 .catch(error => {
                     console.error('There was an error creating the repository!', error);
@@ -68,12 +62,7 @@ new Vue({
         createTracker() {
             axios.post('http://127.0.0.1:8000/api/trackers/', this.newTracker)
                 .then(response => {
-                    this.newTracker.title = '';
-                    this.newTracker.url = '';
-                    this.newTracker.type = '';
-                    this.newTracker.email = '';
-                    this.newTracker.token = '';
-                    this.newTracker.project = '';
+                    this.resetNewTracker();
                 })
                 .catch(error => {
                     console.error('There was an error creating the tracker!', error);
@@ -87,10 +76,48 @@ new Vue({
                 .catch(error => {
                     console.error('There was an error deleting the project!', error);
                 });
+        },
+        editProject(project) {
+            axios.put(`http://127.0.0.1:8000/api/projects/${project.id}/`, project)
+                .then(response => {
+                    this.fetchProjects();
+                })
+                .catch(error => {
+                    console.error('There was an error updating the project!', error);
+                });
+        },
+        resetNewProject() {
+            this.newProject = {
+                name: '',
+                slug: '',
+                description: '',
+                language: '',
+                repositories: [],
+                trackers: []
+            };
+        },
+        resetNewRepository() {
+            this.newRepository = {
+                title: '',
+                url: '',
+                type: '',
+                email: '',
+                token: '',
+                project: ''
+            };
+        },
+        resetNewTracker() {
+            this.newTracker = {
+                title: '',
+                url: '',
+                type: '',
+                email: '',
+                token: '',
+                project: ''
+            };
         }
     },
     mounted() {
-        // Fetch projects on mount to ensure projects are displayed initially
         this.fetchProjects();
     }
 });

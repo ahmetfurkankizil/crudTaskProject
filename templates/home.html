@@ -1,76 +1,120 @@
-<!-- templates/home.html -->
+<!-- projects/templates/home.html -->
+
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Home</title>
+    <title>Project Manager</title>
+    <!-- Load the static files tag library -->
     {% load static %}
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
 </head>
 <body>
-<div id="app">
-    <p>{{ message }}</p>
-    <div>
-        <h2>Projects</h2>
-        <button @click="fetchProjects">List Projects</button>
-        <ul>
-            <li v-for="project in projects" :key="project.id">
-                <strong>Name:</strong> {{ project.name }}<br>
-                <strong>Slug:</strong> {{ project.slug }}<br>
-                <strong>Description:</strong> {{ project.description }}<br>
-                <strong>Language:</strong> {{ project.language }}<br>
-                <strong>Repositories:</strong>
-                <ul>
-                    <li v-for="repo in project.repositories" :key="repo.id">
-                        <strong>Title:</strong> {{ repo.title }}<br>
-                        <strong>URL:</strong> <a :href="repo.url">{{ repo.url }}</a><br>
-                        <strong>Type:</strong> {{ repo.type }}<br>
-                        <strong>Email:</strong> {{ repo.email }}<br>
-                    </li>
-                </ul>
-                <strong>Trackers:</strong>
-                <ul>
-                    <li v-for="tracker in project.trackers" :key="tracker.id">
-                        <strong>Title:</strong> {{ tracker.title }}<br>
-                        <strong>URL:</strong> <a :href="tracker.url">{{ tracker.url }}</a><br>
-                        <strong>Type:</strong> {{ tracker.type }}<br>
-                        <strong>Email:</strong> {{ tracker.email }}<br>
-                    </li>
-                </ul>
-                <button @click="deleteProject(project.id)">Delete</button>
-            </li>
-        </ul>
-        <h2>Create Project</h2>
-        <form @submit.prevent="createProject">
-            <input v-model="newProject.name" placeholder="Name" required>
-            <input v-model="newProject.slug" placeholder="Slug" required>
-            <input v-model="newProject.description" placeholder="Description" required>
-            <input v-model="newProject.language" placeholder="Language" required>
-            <button type="submit">Create Project</button>
-        </form>
-        <h2>Create Repository</h2>
-        <form @submit.prevent="createRepository">
-            <input v-model="newRepository.title" placeholder="Title" required>
-            <input v-model="newRepository.url" placeholder="URL" required>
-            <input v-model="newRepository.type" placeholder="Type" required>
-            <input v-model="newRepository.email" placeholder="Email" required>
-            <input v-model="newRepository.token" placeholder="Token" required>
-            <input v-model="newRepository.project" placeholder="Project ID" required>
-            <button type="submit">Create Repository</button>
-        </form>
-        <h2>Create Tracker</h2>
-        <form @submit.prevent="createTracker">
-            <input v-model="newTracker.title" placeholder="Title" required>
-            <input v-model="newTracker.url" placeholder="URL" required>
-            <input v-model="newTracker.type" placeholder="Type" required>
-            <input v-model="newTracker.email" placeholder="Email" required>
-            <input v-model="newTracker.token" placeholder="Token" required>
-            <input v-model="newTracker.project" placeholder="Project ID" required>
-            <button type="submit">Create Tracker</button>
-        </form>
-    </div>
+<div id="app" class="container">
+    <h1>{{ message }}</h1>
+
+    <!-- Form for creating a new project -->
+    <form @submit.prevent="createProject">
+        <div class="form-group">
+            <label for="name">Project Name:</label>
+            <input type="text" class="form-control" v-model="newProject.name">
+        </div>
+        <div class="form-group">
+            <label for="slug">Slug:</label>
+            <input type="text" class="form-control" v-model="newProject.slug">
+        </div>
+        <div class="form-group">
+            <label for="description">Description:</label>
+            <textarea class="form-control" v-model="newProject.description"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="language">Language:</label>
+            <input type="text" class="form-control" v-model="newProject.language">
+        </div>
+        <button type="submit" class="btn btn-primary">Create Project</button>
+    </form>
+
+    <!-- Form for creating a new repository -->
+    <form @submit.prevent="createRepository">
+        <div class="form-group">
+            <label for="title">Repository Title:</label>
+            <input type="text" class="form-control" v-model="newRepository.title">
+        </div>
+        <div class="form-group">
+            <label for="url">URL:</label>
+            <input type="text" class="form-control" v-model="newRepository.url">
+        </div>
+        <div class="form-group">
+            <label for="type">Type:</label>
+            <select class="form-control" v-model="newRepository.type">
+                <option v-for="type in repositoryTypes" :key="type">{{ type }}</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" class="form-control" v-model="newRepository.email">
+        </div>
+        <div class="form-group">
+            <label for="token">Token:</label>
+            <input type="text" class="form-control" v-model="newRepository.token">
+        </div>
+        <button type="submit" class="btn btn-primary">Create Repository</button>
+    </form>
+
+    <!-- Form for creating a new tracker -->
+    <form @submit.prevent="createTracker">
+        <div class="form-group">
+            <label for="title">Tracker Title:</label>
+            <input type="text" class="form-control" v-model="newTracker.title">
+        </div>
+        <div class="form-group">
+            <label for="url">URL:</label>
+            <input type="text" class="form-control" v-model="newTracker.url">
+        </div>
+        <div class="form-group">
+            <label for="type">Type:</label>
+            <select class="form-control" v-model="newTracker.type">
+                <option v-for="type in trackerTypes" :key="type">{{ type }}</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" class="form-control" v-model="newTracker.email">
+        </div>
+        <div class="form-group">
+            <label for="token">Token:</label>
+            <input type="text" class="form-control" v-model="newTracker.token">
+        </div>
+        <button type="submit" class="btn btn-primary">Create Tracker</button>
+    </form>
+
+    <!-- Data table to list all projects -->
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Slug</th>
+            <th>Description</th>
+            <th>Language</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="project in projects" :key="project.id">
+            <td>{{ project.name }}</td>
+            <td>{{ project.slug }}</td>
+            <td>{{ project.description }}</td>
+            <td>{{ project.language }}</td>
+            <td>
+                <button class="btn btn-warning" @click="editProject(project)">Edit</button>
+                <button class="btn btn-danger" @click="deleteProject(project.id)">Delete</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="{% static 'js/index.js' %}"></script>
 </body>
 </html>

@@ -1,3 +1,5 @@
+# projects/serializers.py
+
 from rest_framework import serializers
 from .models import Project, Repository, Tracker
 
@@ -12,16 +14,16 @@ class TrackerSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class ProjectSerializer(serializers.ModelSerializer):
-    repositories = RepositorySerializer(many=True)
-    trackers = TrackerSerializer(many=True)
+    repositories = RepositorySerializer(many=True, required=False)
+    trackers = TrackerSerializer(many=True, required=False)
 
     class Meta:
         model = Project
         fields = '__all__'
 
     def create(self, validated_data):
-        repositories_data = validated_data.pop('repositories')
-        trackers_data = validated_data.pop('trackers')
+        repositories_data = validated_data.pop('repositories', [])
+        trackers_data = validated_data.pop('trackers', [])
         project = Project.objects.create(**validated_data)
         for repository_data in repositories_data:
             Repository.objects.create(project=project, **repository_data)
@@ -30,8 +32,8 @@ class ProjectSerializer(serializers.ModelSerializer):
         return project
 
     def update(self, instance, validated_data):
-        repositories_data = validated_data.pop('repositories')
-        trackers_data = validated_data.pop('trackers')
+        repositories_data = validated_data.pop('repositories', [])
+        trackers_data = validated_data.pop('trackers', [])
 
         instance.name = validated_data.get('name', instance.name)
         instance.slug = validated_data.get('slug', instance.slug)
